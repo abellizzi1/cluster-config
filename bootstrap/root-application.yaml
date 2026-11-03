@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: local-cluster
+  namespace: argocd
+  # No deletion finalizer: deleting this registration leaves children running.
+spec:
+  project: cluster-bootstrap
+  source:
+    repoURL: https://github.com/REPLACE_ME/cluster-config.git
+    targetRevision: main
+    path: clusters/local
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
