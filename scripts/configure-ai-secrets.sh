@@ -2,11 +2,6 @@
 set -euo pipefail
 
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-export AI_LAN_CONFIG_DIR="${AI_LAN_CONFIG_DIR:-$project_root/../ai-lan-config}"
-if [ ! -f "$AI_LAN_CONFIG_DIR/base/namespace.yaml" ]; then
-  echo "AI configuration checkout is missing. Clone ai-lan-config alongside cluster-config or set AI_LAN_CONFIG_DIR." >&2
-  exit 1
-fi
 bash "$project_root/scripts/connect-cluster.sh" "${CLUSTER_NAME:-ai-lan}"
 export KUBECONFIG="$project_root/.kubeconfig"
 
@@ -19,7 +14,7 @@ export KUBECONFIG="$project_root/.kubeconfig"
 : "${GATEWAY_API_KEY:?Set GATEWAY_API_KEY to the bootstrap administrator password}"
 : "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD to the existing or new database password}"
 
-kubectl apply -f "$AI_LAN_CONFIG_DIR/base/namespace.yaml"
+kubectl create namespace ai-lan --dry-run=client -o yaml | kubectl apply --server-side --field-manager=ai-lan-bootstrap -f -
 kubectl create secret generic gateway-secrets --namespace ai-lan \
   --from-literal="gateway-api-key=$GATEWAY_API_KEY" \
   --from-literal="gateway-admin-username=$GATEWAY_ADMIN_USERNAME" \
