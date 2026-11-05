@@ -2,7 +2,7 @@ services:
   infra:
     build:
       context: .
-      dockerfile: Dockerfile.infra
+      dockerfile: Dockerfile
     working_dir: /workspace
     environment:
       KUBECONFIG: /workspace/.kubeconfig
