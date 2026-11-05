@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/abellizzi1/ai-lan-config.git
     targetRevision: main
-    path: overlays/lan
+    path: overlays/ollama
   destination:
     server: https://kubernetes.default.svc
     namespace: ai-lan
