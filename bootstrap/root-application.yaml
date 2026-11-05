@@ -7,7 +7,7 @@ metadata:
 spec:
   project: cluster-bootstrap
   source:
-    repoURL: https://github.com/REPLACE_ME/cluster-config.git
+    repoURL: https://github.com/abellizzi1/cluster-config.git
     targetRevision: main
     path: clusters/local
   destination:

@@ -9,7 +9,7 @@ metadata:
 spec:
   project: ai-lan
   source:
-    repoURL: https://github.com/REPLACE_ME/ai-lan-config.git
+    repoURL: https://github.com/abellizzi1/ai-lan-config.git
     targetRevision: main
     path: overlays/lan
   destination:

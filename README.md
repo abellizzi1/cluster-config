@@ -1,35 +1,80 @@
-# Shared cluster application registrations
+# Local cluster setup
 
-This directory is ready to become the root of its own Git repository. Terraform in the infrastructure repository creates k3d and installs the pinned Argo CD release. This repo registers applications; it does not build images or install Argo itself.
+This is the starting point for the shared k3d cluster. Terraform is used to create the cluster and deploy ArgoCD.
 
-| Path | Purpose |
-| --- | --- |
-| `bootstrap/` | Apply once after Argo installation and initial AI secrets/data preparation; registers the trusted bootstrap project and `local-cluster` root Application. |
-| `clusters/local/` | Root Application source: per-application projects and child Applications for this cluster. |
+## Related apps
 
-Before registration, replace `https://github.com/REPLACE_ME/cluster-config.git` in both bootstrap files and `https://github.com/REPLACE_ME/ai-lan-config.git` in both AI registration files with reachable repository URLs. `main` is the default branch. Publish the contents of each configuration folder at its own repository root. If keeping a monorepo, use its URL for both sources, prefix the root source path with `cluster-config/`, and prefix the child source path with `ai-lan-config/`. Public Git sources require no credentials. Configure private repository access in Argo CD before registering the root; never commit access tokens or SSH keys.
+- Self-Hosted AI Gateway
+  - [ai-lan](https://github.com/abellizzi1/ai-lan)
+  - [ai-lan-config](https://github.com/abellizzi1/ai-lan-config)
 
-From this repository root, with kubeconfig targeting the intended cluster:
+## Setup
+
+### Infra container
 
 ```bash
-kubectl kustomize bootstrap
-kubectl kustomize clusters/local
-# Run only AFTER runtime secrets and any database restore are complete:
-kubectl apply -k bootstrap
-kubectl -n argocd get applications
+docker compose build infra
+docker compose run --rm --service-ports infra bash
 ```
 
-The infrastructure repo's `scripts/prepare-ai-lan.sh` sets up the AI Secret and restores an empty database before registration. The child Application points to `overlays/lan`. To use local Ollama, change its `spec.source.path` to `overlays/ollama` **before** the first sync and use `ollama` for the runtime provider key. Later, commit application registration changes here and let the root Application sync them. Bootstrap files remain operator-managed; reapply them after changing their URL, branch, or project policy.
+Inside the container:
 
-The root automatically syncs and repairs drift but does not prune registrations. The child automatically syncs, prunes removed workloads, and repairs drift. Namespace and data PVCs opt out of prune/deletion. Neither Application has a cascading deletion finalizer: deleting a registration leaves its workloads running. To decommission, remove its definition from this repo, explicitly delete its registration, then remove workloads after backing up data. A removed child file alone does not stop deployment because root pruning is disabled.
+```bash
+terraform init
+terraform plan
+terraform apply
+```
 
-Only trusted administrators should write to this repository: permission to create AppProjects/Applications in `argocd` grants deployment control. The AI project restricts namespaced workloads to `ai-lan` and a specific Git source. Namespace creation is its only allowed cluster-scoped resource type. The Argo installation itself has cluster administration permissions.
+### Starting ArgoCD
 
-## Add the future monitoring project
+Export necessary environment variables and run `scripts/prepare-ai-lan.sh`:
 
-1. Create its application configuration repository, namespace plan, runtime secrets, and required data/backup preparation.
-2. Copy the AI AppProject/Application pattern to `clusters/local/monitoring-project.yaml` and `monitoring-application.yaml`. Set unique names, the monitoring Git URL/path, destination namespace, and only the resource permissions that application needs. Cluster-scoped monitoring resources such as ClusterRoles require explicit project permissions.
-3. Add both files to `clusters/local/kustomization.yaml` and push this repo. The root registers the new application alongside AI.
-4. Give its ingress a hostname distinct from the AI catch-all route and configure LAN DNS/hosts entries. Both services then share host port 8080.
+```bash
+export GITHUB_TOKEN='<token>'  # optional if any repos are private
+export GATEWAY_ADMIN_USERNAME='admin'
+export GATEWAY_API_KEY='<your-admin-password>'
+export POSTGRES_PASSWORD='<your-postgres-password>'
+export PROVIDER_API_KEY='<your-provider-api-key>'
+```
 
-Sync waves order projects before Application registration within the root. The applications subsequently reconcile independently; these waves do not enforce workload dependencies across child Applications. The infrastructure teardown removes the whole cluster, so add backup procedures for monitoring data before relying on cluster teardown.
+Then run:
+
+```bash
+./scripts/prepare-ai-lan.sh
+kubectl apply -k bootstrap
+```
+
+Bootstrap creates a missing cluster or starts an existing one.
+
+### Access Argo CD
+
+In the runner launched with `--service-ports`, retrieve the initial password and start port forwarding:
+
+```bash
+kubectl -n argocd port-forward --address 0.0.0.0 svc/argocd-server 8081:443 &
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+```
+
+ArgoCD should now be accessible at `https://localhost:8081`.
+
+### Using Ollama
+
+Set the AI Application path in `clusters/local/ai-lan-application.yaml` to `overlays/ollama`, and export the following environment variable:
+
+```bash
+export PROVIDER_API_KEY='ollama'
+```
+
+The path can also be edited in ArgoCD to `overlays/ollama` post-deployment.
+
+## Teardown
+
+Inside the infra container:
+
+```bash
+bash scripts/teardown.sh
+```
+
+This stops Argo reconciliation and the gateway, backs up AI PostgreSQL to `backups/`, and runs `terraform destroy`. Backup or API failures abort destruction.
+
+**Teardown deletes the entire cluster and every local volume. Only AI PostgreSQL is backed up by this script.** Back up other applications separately.
