@@ -7,7 +7,10 @@ kubeconfig="$project_root/.kubeconfig"
 
 # Each fresh infra runner needs its own connection to the cluster network.
 runner_id=$(cat /etc/hostname)
-cluster_network_id=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.NetworkID}}{{end}}' "k3d-$cluster_name-server-0")
+if ! cluster_network_id=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.NetworkID}}{{end}}' "k3d-$cluster_name-server-0"); then
+  echo "Could not inspect the cluster server. Check Docker access; if the cluster is missing, run terraform apply -replace=terraform_data.argocd from the infra runner." >&2
+  exit 1
+fi
 if [ -z "$cluster_network_id" ]; then
   echo "Could not find the Docker network for k3d-$cluster_name-server-0" >&2
   exit 1

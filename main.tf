@@ -27,6 +27,7 @@ resource "terraform_data" "argocd" {
     terraform_data.cluster.id,
     var.argocd_version,
     filesha256("${path.module}/scripts/bootstrap-argocd.sh"),
+    filesha256("${path.module}/scripts/create-cluster.sh"),
     filesha256("${path.module}/scripts/connect-cluster.sh")
   ]
 
@@ -35,6 +36,8 @@ resource "terraform_data" "argocd" {
     interpreter = ["/bin/bash", "-c"]
     environment = {
       CLUSTER_NAME   = var.cluster_name
+      HTTP_PORT      = tostring(var.http_port)
+      K3S_IMAGE      = var.k3s_image
       ARGOCD_VERSION = var.argocd_version
     }
   }

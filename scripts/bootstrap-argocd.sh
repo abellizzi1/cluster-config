@@ -3,9 +3,11 @@ set -euo pipefail
 
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 : "${CLUSTER_NAME:=ai-lan}"
+: "${HTTP_PORT:=8080}"
 : "${ARGOCD_VERSION:=v3.5.6}"
 [[ "$ARGOCD_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Use a pinned Argo CD release tag." >&2; exit 1; }
-bash "$project_root/scripts/connect-cluster.sh" "$CLUSTER_NAME"
+# Terraform state can outlive the actual Docker cluster containers.
+bash "$project_root/scripts/create-cluster.sh" "$CLUSTER_NAME" "$HTTP_PORT"
 export KUBECONFIG="$project_root/.kubeconfig"
 
 # Do not silently replace an older cluster: it may hold application data.
