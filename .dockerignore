@@ -1,0 +1,12 @@
+.git
+.terraform
+*.tfstate*
+*.tfvars
+*.tfvars.json
+.kubeconfig
+.env
+.env.*
+backups
+*.dump
+secrets*.yaml
+secrets*.yml

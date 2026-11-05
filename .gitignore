@@ -1,6 +1,13 @@
 .env
 .env.*
+!.env.example
 *.dump
 .kubeconfig
 secrets*.yaml
 secrets*.yml
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+backups/

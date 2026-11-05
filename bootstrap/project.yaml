@@ -6,7 +6,7 @@ metadata:
 spec:
   description: Trusted administrators manage application registrations here.
   sourceRepos:
-    - https://github.com/REPLACE_ME/cluster-config.git
+    - https://github.com/abellizzi1/cluster-config.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: argocd
