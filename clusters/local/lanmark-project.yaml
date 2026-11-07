@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: lanmark
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  description: LAN monitoring workloads restricted to the lanmark namespace.
+  sourceRepos:
+    - https://github.com/abellizzi1/lanmark-config.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: lanmark
+  clusterResourceWhitelist:
+    - {group: '', kind: Namespace}
+  namespaceResourceWhitelist:
+    - {group: '', kind: ConfigMap}
+    - {group: '', kind: Service}
+    - {group: '', kind: PersistentVolumeClaim}
+    - {group: apps, kind: Deployment}
+    - {group: networking.k8s.io, kind: Ingress}

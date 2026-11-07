@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lanmark
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  # No deletion finalizer: decommission explicitly after backing up data.
+spec:
+  project: lanmark
+  source:
+    repoURL: https://github.com/abellizzi1/lanmark-config.git
+    targetRevision: main
+    path: overlays/lan
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lanmark
+  syncPolicy:
+    # Enable automated reconciliation after publishing images/config and creating
+    # the runtime secret. This keeps initial registration safe on existing clusters.
+    syncOptions:
+      - PruneLast=true
+      - FailOnSharedResource=true
+    retry:
+      limit: 5
+      backoff: {duration: 5s, factor: 2, maxDuration: 3m}

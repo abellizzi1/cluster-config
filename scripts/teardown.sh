@@ -35,4 +35,13 @@ else
   echo "No PostgreSQL deployment found; no database backup was created."
 fi
 
+# Preserve the monitoring inventory, history, incidents, and notification outbox.
+# Only back up an initialized stack: a PVC alone may predate its first deployment.
+lanmark=$(kubectl get deployment lanmark --namespace lanmark --ignore-not-found -o name)
+if [ -n "$lanmark" ]; then
+  kubectl scale --namespace lanmark "$lanmark" --replicas=0
+  kubectl wait --namespace lanmark --for=delete pod -l app=lanmark --timeout=180s
+  bash "$project_root/scripts/backup-lanmark.sh"
+fi
+
 terraform -chdir="$project_root" destroy

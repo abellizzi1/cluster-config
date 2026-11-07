@@ -3,3 +3,5 @@ kind: Kustomization
 resources:
   - ai-lan-project.yaml
   - ai-lan-application.yaml
+  - lanmark-project.yaml
+  - lanmark-application.yaml
