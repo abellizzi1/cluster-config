@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-cluster_name="${1:-${CLUSTER_NAME:-ai-lan}}"
+cluster_name="${1:-${CLUSTER_NAME:-apps-cluster}}"
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 kubeconfig="$project_root/.kubeconfig"
 

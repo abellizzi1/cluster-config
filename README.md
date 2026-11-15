@@ -27,7 +27,7 @@ terraform apply
 
 ### Starting ArgoCD
 
-Export necessary environment variables and run `scripts/prepare-ai-lan.sh`:
+Export necessary environment variables:
 
 ```bash
 export GITHUB_TOKEN='<token>'  # optional if any repos are private

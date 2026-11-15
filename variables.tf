@@ -1,7 +1,7 @@
 variable "cluster_name" {
-  description = "Name for the shared local k3d/K3s cluster. Retained as ai-lan to preserve existing Terraform state."
+  description = "Name for the shared local k3d/K3s cluster hosting multiple applications and projects."
   type        = string
-  default     = "ai-lan"
+  default     = "apps-cluster"
 }
 
 variable "http_port" {

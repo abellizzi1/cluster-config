@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 
-: "${CLUSTER_NAME:=ai-lan}"
+: "${CLUSTER_NAME:=apps-cluster}"
 : "${HTTP_PORT:=8080}"
 : "${ARGOCD_VERSION:=v3.5.6}"
 
