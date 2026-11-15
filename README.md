@@ -27,7 +27,7 @@ terraform apply
 
 ### Starting ArgoCD
 
-Export necessary environment variables and run `scripts/prepare-ai-lan.sh`:
+Export necessary environment variables:
 
 ```bash
 export GITHUB_TOKEN='<token>'  # optional if any repos are private
@@ -48,7 +48,7 @@ Bootstrap creates a missing cluster or starts an existing one.
 
 ### Access Argo CD
 
-In the runner launched with `--service-ports`, retrieve the initial password and start port forwarding:
+In the infra container launched with `--service-ports`, retrieve the initial password and start port forwarding:
 
 ```bash
 kubectl -n argocd port-forward --address 0.0.0.0 svc/argocd-server 8081:443 &

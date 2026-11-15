@@ -5,7 +5,7 @@ project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 kubeconfig="$project_root/.kubeconfig"
 namespace="ai-lan"
 
-bash "$project_root/scripts/connect-cluster.sh" "${CLUSTER_NAME:-ai-lan}"
+bash "$project_root/scripts/connect-cluster.sh" "${CLUSTER_NAME:-apps-cluster}"
 export KUBECONFIG="$kubeconfig"
 
 # Stop reconciliation before scaling the gateway, including any in-flight

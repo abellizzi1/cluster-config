@@ -2,7 +2,7 @@
 set -euo pipefail
 
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-bash "$project_root/scripts/connect-cluster.sh" "${CLUSTER_NAME:-ai-lan}"
+bash "$project_root/scripts/connect-cluster.sh" "${CLUSTER_NAME:-apps-cluster}"
 export KUBECONFIG="$project_root/.kubeconfig"
 kubectl rollout status deployment/postgres --namespace ai-lan --timeout=180s
 backup_dir="$project_root/backups"
