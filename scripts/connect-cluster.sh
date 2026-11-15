@@ -3,7 +3,7 @@ set -euo pipefail
 
 cluster_name="${1:-${CLUSTER_NAME:-apps-cluster}}"
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-kubeconfig="$project_root/../.kubeconfig"
+kubeconfig="$script_dir/../.kubeconfig"
 
 # Each fresh infra runner needs its own connection to the cluster network.
 runner_id=$(cat /etc/hostname)
