@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-bash "$project_root/scripts/connect-cluster.sh" "${CLUSTER_NAME:-apps-cluster}"
-export KUBECONFIG="$project_root/.kubeconfig"
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+bash "$script_dir/connect-cluster.sh" "${CLUSTER_NAME:-apps-cluster}"
+export KUBECONFIG="$script_dir/../.kubeconfig"
 
 # Accept the previous environment names during migration; secrets no longer
 # pass through Terraform or live in either configuration repository.
@@ -15,10 +15,5 @@ export KUBECONFIG="$project_root/.kubeconfig"
 : "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD to the existing or new database password}"
 
 kubectl create namespace ai-lan --dry-run=client -o yaml | kubectl apply --server-side --field-manager=ai-lan-bootstrap -f -
-kubectl create secret generic gateway-secrets --namespace ai-lan \
-  --from-literal="gateway-api-key=$GATEWAY_API_KEY" \
-  --from-literal="gateway-admin-username=$GATEWAY_ADMIN_USERNAME" \
-  --from-literal="provider-api-key=$PROVIDER_API_KEY" \
-  --from-literal="postgres-password=$POSTGRES_PASSWORD" \
-  --dry-run=client -o yaml | kubectl apply -f -
-echo "AI secrets configured. Existing pods require a restart to read changed secrets."
+kubectl create secret generic gateway-secrets --namespace ai-lan --from-literal="gateway-api-key=$GATEWAY_API_KEY" --from-literal="gateway-admin-username=$GATEWAY_ADMIN_USERNAME" --from-literal="provider-api-key=$PROVIDER_API_KEY" --from-literal="postgres-password=$POSTGRES_PASSWORD" --dry-run=client -o yaml | kubectl apply -f -
+echo "Secrets configured for ai-lan."
