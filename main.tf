@@ -26,13 +26,13 @@ resource "terraform_data" "argocd" {
   triggers_replace = [
     terraform_data.cluster.id,
     var.argocd_version,
-    filesha256("${path.module}/scripts/bootstrap-argocd.sh"),
+    filesha256("${path.module}/scripts/deploy-argocd.sh"),
     filesha256("${path.module}/scripts/create-cluster.sh"),
     filesha256("${path.module}/scripts/connect-cluster.sh")
   ]
 
   provisioner "local-exec" {
-    command     = "bash '${path.module}/scripts/bootstrap-argocd.sh'"
+    command     = "bash '${path.module}/scripts/deploy-argocd.sh'"
     interpreter = ["/bin/bash", "-c"]
     environment = {
       CLUSTER_NAME   = var.cluster_name
