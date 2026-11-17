@@ -8,6 +8,6 @@ output "api_url" {
 }
 
 output "argocd_access" {
-  description = "Run in the infra container; open https://localhost:8081 on the Docker host."
-  value       = "kubectl --kubeconfig /workspace/.kubeconfig -n argocd port-forward --address 0.0.0.0 svc/argocd-server 8081:443"
+  description = "Open on the Docker host; no port-forward process is needed."
+  value       = "http://localhost:${var.argocd_http_port}"
 }

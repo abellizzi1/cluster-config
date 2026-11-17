@@ -10,6 +10,17 @@ variable "http_port" {
   default     = 8080
 }
 
+variable "argocd_http_port" {
+  description = "Localhost TCP port for the Argo CD UI, separate from the shared application ingress."
+  type        = number
+  default     = 8082
+
+  validation {
+    condition     = var.argocd_http_port >= 1024 && var.argocd_http_port <= 65535 && floor(var.argocd_http_port) == var.argocd_http_port
+    error_message = "Use an integer port between 1024 and 65535."
+  }
+}
+
 variable "k3s_image" {
   description = "K3s image for NEW clusters. Changing this does not upgrade or replace an existing cluster."
   type        = string

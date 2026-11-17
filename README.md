@@ -14,7 +14,7 @@ This is the starting point for the shared k3d cluster. Terraform is used to crea
 
 ```bash
 docker compose build infra
-docker compose run --rm --service-ports infra bash
+docker compose run --rm infra bash
 ```
 
 Inside the container:
@@ -48,13 +48,13 @@ Bootstrap creates a missing cluster or starts an existing one.
 
 ### Access Argo CD
 
-In the infra container launched with `--service-ports`, retrieve the initial password:
+In the infra container, retrieve the initial password:
 
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 ```
 
-ArgoCD should now be accessible at http://localhost:8080.
+ArgoCD should be accessible at https://localhost:8082. Use `admin` username and the password retrieved with the command above.
 
 ### Using Ollama
 
