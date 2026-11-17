@@ -48,14 +48,13 @@ Bootstrap creates a missing cluster or starts an existing one.
 
 ### Access Argo CD
 
-In the infra container launched with `--service-ports`, retrieve the initial password and start port forwarding:
+In the infra container launched with `--service-ports`, retrieve the initial password:
 
 ```bash
-kubectl -n argocd port-forward --address 0.0.0.0 svc/argocd-server 8081:443 &
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 ```
 
-ArgoCD should now be accessible at `https://localhost:8081`.
+ArgoCD should now be accessible at http://localhost:8080.
 
 ### Using Ollama
 

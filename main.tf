@@ -26,6 +26,9 @@ resource "terraform_data" "argocd" {
   triggers_replace = [
     terraform_data.cluster.id,
     var.argocd_version,
+    filesha256("${path.module}/argocd/kustomization.yaml"),
+    filesha256("${path.module}/argocd/argocd-cmd-params-cm.yaml"),
+    filesha256("${path.module}/argocd/ingress.yaml"),
     filesha256("${path.module}/scripts/deploy-argocd.sh"),
     filesha256("${path.module}/scripts/create-cluster.sh"),
     filesha256("${path.module}/scripts/connect-cluster.sh")
