@@ -10,6 +10,7 @@ RUN apt-get update && \
       curl \
       unzip \
       docker.io \
+      vim \
     && rm -rf /var/lib/apt/lists/* \
     && curl -fsSLo /tmp/terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
     && unzip /tmp/terraform.zip -d /usr/local/bin \
