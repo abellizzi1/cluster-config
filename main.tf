@@ -33,7 +33,8 @@ resource "terraform_data" "argocd" {
     filesha256("${path.module}/argocd/ingress.yaml"),
     filesha256("${path.module}/scripts/deploy-argocd.sh"),
     filesha256("${path.module}/scripts/create-cluster.sh"),
-    filesha256("${path.module}/scripts/connect-cluster.sh")
+    filesha256("${path.module}/scripts/connect-cluster.sh"),
+    filesha256("${path.module}/scripts/configure-ai-secrets.sh")
   ]
 
   provisioner "local-exec" {
