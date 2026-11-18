@@ -15,14 +15,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: ai-lan
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-      allowEmpty: false
-    syncOptions:
-      - PruneLast=true
-      - FailOnSharedResource=true
+  syncPolicy: {}
     retry:
       limit: 5
       backoff:
