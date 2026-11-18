@@ -1,16 +1,14 @@
 resource "terraform_data" "cluster" {
   input = {
-    cluster_name     = var.cluster_name
-    http_port        = var.http_port
-    argocd_http_port = var.argocd_http_port
+    cluster_name = var.cluster_name
+    http_port    = var.http_port
   }
 
   provisioner "local-exec" {
     command     = "bash '${path.module}/scripts/create-cluster.sh' '${var.cluster_name}' '${var.http_port}'"
     interpreter = ["/bin/bash", "-c"]
     environment = {
-      K3S_IMAGE        = var.k3s_image
-      ARGOCD_HTTP_PORT = tostring(var.argocd_http_port)
+      K3S_IMAGE = var.k3s_image
     }
   }
 
@@ -28,10 +26,11 @@ resource "terraform_data" "argocd" {
   triggers_replace = [
     terraform_data.cluster.id,
     var.argocd_version,
-    var.argocd_http_port,
+    var.http_port,
     filesha256("${path.module}/argocd/kustomization.yaml"),
     filesha256("${path.module}/argocd/argocd-cmd-params-cm.yaml"),
     filesha256("${path.module}/argocd/service.yaml"),
+    filesha256("${path.module}/argocd/ingress.yaml"),
     filesha256("${path.module}/scripts/deploy-argocd.sh"),
     filesha256("${path.module}/scripts/create-cluster.sh"),
     filesha256("${path.module}/scripts/connect-cluster.sh")
@@ -41,11 +40,10 @@ resource "terraform_data" "argocd" {
     command     = "bash '${path.module}/scripts/deploy-argocd.sh'"
     interpreter = ["/bin/bash", "-c"]
     environment = {
-      CLUSTER_NAME     = var.cluster_name
-      HTTP_PORT        = tostring(var.http_port)
-      ARGOCD_HTTP_PORT = tostring(var.argocd_http_port)
-      K3S_IMAGE        = var.k3s_image
-      ARGOCD_VERSION   = var.argocd_version
+      CLUSTER_NAME   = var.cluster_name
+      HTTP_PORT      = tostring(var.http_port)
+      K3S_IMAGE      = var.k3s_image
+      ARGOCD_VERSION = var.argocd_version
     }
   }
 }
