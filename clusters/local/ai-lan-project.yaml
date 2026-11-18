@@ -6,12 +6,15 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
-  description: Hearth AI workloads, restricted to the ai-lan namespace.
+  description: Hearth AI workloads and Argo CD application controls.
   sourceRepos:
     - https://github.com/abellizzi1/ai-lan-config.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: ai-lan
+    # Argo CD's Application resource actions run against the argocd namespace.
+    - server: https://kubernetes.default.svc
+      namespace: argocd
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
@@ -28,3 +31,5 @@ spec:
       kind: Ingress
     - group: traefik.io
       kind: Middleware
+    - group: argoproj.io
+      kind: Application

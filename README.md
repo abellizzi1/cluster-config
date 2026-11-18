@@ -57,6 +57,8 @@ kubectl apply -k bootstrap
 
 Bootstrap creates a missing cluster or starts an existing one.
 
+Both `local-cluster` and `ai-lan` use manual sync by default. After registering `bootstrap/`, open Argo CD and **Sync** `local-cluster` to register its child applications, then **Sync** `ai-lan` to deploy the workloads.
+
 ### Access Argo CD
 
 In the infra container, retrieve the initial password:
@@ -86,13 +88,19 @@ The `argocd_http_port` Terraform variable has been removed; remove any correspon
 
 ### Using Ollama
 
-Set the AI Application path in `clusters/local/ai-lan-application.yaml` to `overlays/ollama`, and export the following environment variable:
+In Argo CD, open the `ai-lan` application's details and edit its source path from `overlays/lan` to `overlays/ollama`. Save, then click **Sync** to apply the change. Switch back to `overlays/lan` in the same way. The Git manifest retains `overlays/lan` as the initial default; no Git edit is required to switch an existing deployment.
+
+The parent `local-cluster` application ignores changes to the child's source path and automated-sync policy, including during manual parent syncs. Both applications have automatic sync disabled by default; the UI can still enable it when desired. Changing a path with automatic sync disabled does not deploy it until you click **Sync**.
+
+The `ai-lan` AppProject permits Application resource actions in `argocd`, which allows the UI's Enable/Disable Auto-Sync actions. Commit and push these project settings before manually syncing the parent from Git so older project permissions are not restored.
+
+For Ollama secret configuration, use:
 
 ```bash
 export PROVIDER_API_KEY='ollama'
 ```
 
-The path can also be edited in ArgoCD to `overlays/ollama` post-deployment.
+If you update secrets, run `scripts/configure-ai-secrets.sh` with the other required credentials exported, then restart the gateway to pick up the change.
 
 ## Teardown
 

@@ -17,6 +17,7 @@ spec:
     namespace: ai-lan
   syncPolicy:
     automated:
+      enabled: false
       prune: true
       selfHeal: true
       allowEmpty: false
