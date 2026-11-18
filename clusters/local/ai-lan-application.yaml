@@ -16,9 +16,3 @@ spec:
     server: https://kubernetes.default.svc
     namespace: ai-lan
   syncPolicy: {}
-    retry:
-      limit: 5
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 3m
