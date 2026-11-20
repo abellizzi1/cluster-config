@@ -2,6 +2,15 @@
 
 This is the starting point for the shared k3d cluster. Terraform is used to create the cluster and deploy ArgoCD.
 
+Traefik shares one HTTP port (default `8080`) between applications:
+
+| Application | URL on the Docker host | URL from another LAN device |
+| --- | --- | --- |
+| Argo CD | `http://localhost:8080/argocd/` | `http://<HOST_LAN_IP>:8080/argocd/` |
+| AI Gateway | `http://localhost:8080/ai/` | `http://<HOST_LAN_IP>:8080/ai/` |
+
+Opening `/` on either address redirects to `/argocd/`.
+
 ## Related apps
 
 - Self-Hosted AI Gateway
@@ -44,8 +53,6 @@ Then run:
 kubectl apply -k bootstrap
 ```
 
-Bootstrap creates a missing cluster or starts an existing one.
-
 ### Access Argo CD
 
 In the infra container, retrieve the initial password:
@@ -54,7 +61,7 @@ In the infra container, retrieve the initial password:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
 ```
 
-ArgoCD should be accessible at https://localhost:8082. Use `admin` username and the password retrieved with the command above.
+Argo CD is accessible at `http://localhost:8080/argocd/` (substitute your Terraform `http_port` if changed). Use the `admin` username and the password retrieved above.
 
 ### Using Ollama
 

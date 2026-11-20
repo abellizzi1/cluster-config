@@ -10,13 +10,14 @@ spec:
   project: ai-lan
   source:
     repoURL: https://github.com/abellizzi1/ai-lan-config.git
-    targetRevision: main
+    targetRevision: ingress-routing
     path: overlays/lan
   destination:
     server: https://kubernetes.default.svc
     namespace: ai-lan
   syncPolicy:
     automated:
+      enabled: false
       prune: true
       selfHeal: true
       allowEmpty: false

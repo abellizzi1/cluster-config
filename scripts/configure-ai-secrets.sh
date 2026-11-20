@@ -11,6 +11,8 @@ export KUBECONFIG="$script_dir/../.kubeconfig"
 : "${GATEWAY_ADMIN_USERNAME:=${TF_VAR_gateway_admin_username:-admin}}"
 : "${POSTGRES_PASSWORD:=${TF_VAR_postgres_password:-}}"
 : "${PROVIDER_API_KEY:=${TF_VAR_provider_api_key:-}}"
+# API keys are single-line tokens. Remove CRLF copied from Windows env files.
+PROVIDER_API_KEY=$(printf '%s' "$PROVIDER_API_KEY" | tr -d '\r\n')
 : "${GATEWAY_API_KEY:?Set GATEWAY_API_KEY to the bootstrap administrator password}"
 : "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD to the existing or new database password}"
 

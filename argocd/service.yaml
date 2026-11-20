@@ -4,11 +4,10 @@ metadata:
   name: argocd-server-local
   namespace: argocd
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app.kubernetes.io/name: argocd-server
   ports:
     - name: http
       port: 80
       targetPort: 8080
-      nodePort: 30080

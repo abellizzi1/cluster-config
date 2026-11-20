@@ -8,15 +8,27 @@ spec:
   project: cluster-bootstrap
   source:
     repoURL: https://github.com/abellizzi1/cluster-config.git
-    targetRevision: main
+    targetRevision: ingress-routing
     path: clusters/local
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
+  # Keep the AI application's UI-selected overlay and sync policy on parent syncs.
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Application
+      name: ai-lan
+      namespace: argocd
+      jsonPointers:
+        - /spec/source/path
+        - /spec/syncPolicy/automated
   syncPolicy:
     automated:
+      enabled: false
       prune: false
       selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
