@@ -8,7 +8,7 @@ spec:
   project: cluster-bootstrap
   source:
     repoURL: https://github.com/abellizzi1/cluster-config.git
-    targetRevision: ingress-routing
+    targetRevision: main
     path: clusters/local
   destination:
     server: https://kubernetes.default.svc
